@@ -12,11 +12,6 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
   return <section className={`rounded-card border border-border bg-white shadow-card ${className}`}>{children}</section>;
 }
 
-/** กล่องพื้นเทาอ่อน ใช้กับแผงรองที่ไม่ใช่เนื้อหาหลัก */
-export function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-card border border-border bg-surface ${className}`}>{children}</section>;
-}
-
 /** เรียงส่วนต่างๆ ของหน้าจากบนลงล่าง เว้น 32px ระหว่างกลุ่ม */
 export function PageStack({ children }: { children: ReactNode }) {
   return <div className="flex flex-col gap-8">{children}</div>;
@@ -95,15 +90,5 @@ export function StatCard({ label, value, note, children }: { label: string; valu
       {note && <p className="text-caption text-muted">{note}</p>}
       {children}
     </Card>
-  );
-}
-
-/** หัวข้อของส่วนย่อยในหน้า */
-export function SectionTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <h2 className="text-h3 font-semibold text-ink">{children}</h2>
-      {action}
-    </div>
   );
 }

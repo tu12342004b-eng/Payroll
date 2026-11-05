@@ -20,12 +20,6 @@ export function monthOffsetLabel(offset: number) {
   return `อีก ${offset} เดือน`;
 }
 
-/** ตัวเลือก "จ่ายเดือนไหน" ของแต่ละรอบ (รอบที่ 2 ไม่มี "เดือนเดียวกัน") */
-export function monthOffsetOptions(round: RoundNo) {
-  const from = round === 1 ? 0 : 1;
-  return Array.from({ length: MAX_MONTH_OFFSET - from + 1 }, (_, i) => ({ value: String(from + i), label: monthOffsetLabel(from + i) }));
-}
-
 /** อ่านค่าของรอบที่ระบุ */
 export function roundSetting(s: PaySettings, round: RoundNo) {
   return round === 1 ? { day: s.round1PayDay, offset: s.round1MonthOffset } : { day: s.round2PayDay, offset: s.round2MonthOffset };

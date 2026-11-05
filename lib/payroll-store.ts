@@ -99,8 +99,6 @@ export function usePayrollStore() {
       delete overrides[id];
       write({ ...read(), overrides });
     },
-    /** ล้างทุกอย่างกลับเป็นค่าเริ่มต้น */
-    resetAll: () => write(DEFAULT_STATE),
   };
 }
 

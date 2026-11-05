@@ -128,18 +128,12 @@ export function buildRounds(requests: PaymentRequest[]): PayRound[] {
   return [...map.values()].sort((a, b) => (a.payDate < b.payDate ? 1 : -1));
 }
 
-// สร้างครั้งเดียวตอนโหลดไฟล์ แล้วใช้ซ้ำ
+// สร้างครั้งเดียวตอนโหลดไฟล์ แล้วใช้ซ้ำ (รอบจ่ายคำนวณด้วย buildRounds() ในหน้าตั้งค่ารอบจ่าย)
 const REQUESTS = buildRequests();
-const ROUNDS = buildRounds(REQUESTS);
 
 /** คำขอเบิกทั้งหมด (ภายหลังเปลี่ยนเป็น fetch จาก API) */
 export function getPaymentRequests(): PaymentRequest[] {
   return REQUESTS;
-}
-
-/** รอบจ่ายทั้งหมด */
-export function getPayRounds(): PayRound[] {
-  return ROUNDS;
 }
 
 /** ผู้ใช้ที่ล็อกอินอยู่ (ตัวอย่าง: ฝ่ายการเงิน) */
