@@ -6,9 +6,10 @@ import { ROUND_LABEL, ROUND_RANGE } from "@/lib/constants";
 import { sumBy } from "@/lib/filters";
 import { formatBaht, formatThaiDate } from "@/lib/format";
 import { buildRounds } from "@/lib/mock-data";
-import { applyPayroll, usePayrollStore } from "@/lib/payroll-store";
+import { applyPayroll, useHydrated, usePayrollStore } from "@/lib/payroll-store";
 import type { PaymentRequest } from "@/lib/types";
 import { RescheduleList } from "./RescheduleList";
+import { RoundsSkeleton } from "./RoundsSkeleton";
 import { RoundsTable } from "./RoundsTable";
 
 /**
@@ -19,6 +20,7 @@ import { RoundsTable } from "./RoundsTable";
  */
 export function RoundsOverview({ requests }: { requests: PaymentRequest[] }) {
   const store = usePayrollStore();
+  const hydrated = useHydrated();
 
   // รอบจ่าย: ใช้วันตามการตั้งค่ารอบ (ไม่รวมการเลื่อนรายคำขอ)
   const rounds = buildRounds(applyPayroll(requests, { settings: store.settings, overrides: {} }));
@@ -29,6 +31,9 @@ export function RoundsOverview({ requests }: { requests: PaymentRequest[] }) {
   // รอบถัดไป = รอบที่ยังรอจ่ายและกำหนดจ่ายเร็วที่สุด (= วันจ่ายเงินปัจจุบัน)
   const next = rounds.filter((r) => r.status === "pending").sort((a, b) => (a.payDate < b.payDate ? -1 : 1))[0];
   const dueNext = next ? effective.filter((r) => r.status === "pending" && r.payDate === next.payDate) : [];
+
+  // ยังไม่ได้อ่านค่าที่บันทึกไว้ใน browser: แสดง skeleton ไปก่อน (กันวันที่เริ่มต้นแว้บแล้วเปลี่ยน)
+  if (!hydrated) return <RoundsSkeleton />;
 
   return (
     <PageStack>

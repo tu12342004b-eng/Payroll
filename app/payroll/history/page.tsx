@@ -1,17 +1,13 @@
-import { PageHeader } from "@/components/layout/PageHeader";
+import { HistoryHeader } from "@/components/payroll/PageHeaders";
 import { HistoryView } from "@/components/payroll/HistoryView";
-import { getPaymentRequests } from "@/lib/mock-data";
+import { fetchPaymentRequests } from "@/lib/api";
 
 // หน้า "ประวัติการจ่ายเงินสวัสดิการ" (wireframe Payroll-3.png) แสดงเฉพาะรายการที่จ่ายแล้ว
-export default function HistoryPage() {
-  const paid = getPaymentRequests().filter((r) => r.status === "paid");
+export default async function HistoryPage() {
+  const paid = (await fetchPaymentRequests()).filter((r) => r.status === "paid");
   return (
     <>
-      <PageHeader
-        crumbs={[{ label: "Payroll" }, { label: "ประวัติ" }]}
-        title="ประวัติการจ่ายเงินสวัสดิการ"
-        description="ค้นหาและดูประวัติการจ่ายเงิน พร้อมตรวจสอบรายละเอียดของแต่ละรายการย้อนหลัง"
-      />
+      <HistoryHeader />
       <HistoryView requests={paid} />
     </>
   );

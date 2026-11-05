@@ -1,13 +1,14 @@
-import { PageHeader } from "@/components/layout/PageHeader";
+import { ApprovalsHeader } from "@/components/payroll/PageHeaders";
 import { ApprovalsView } from "@/components/payroll/ApprovalsView";
-import { getPaymentRequests } from "@/lib/mock-data";
+import { fetchPaymentRequests } from "@/lib/api";
 
 // หน้า "รายการอนุมัติ / รอจ่าย" (wireframe Payroll-1.png)
-export default function ApprovalsPage() {
+export default async function ApprovalsPage() {
+  const requests = await fetchPaymentRequests();
   return (
     <>
-      <PageHeader crumbs={[{ label: "Payroll" }, { label: "รายการ" }]} title="รายการอนุมัติ / รอจ่าย" description="ตรวจสอบรายการที่อนุมัติแล้วและสถานะการจ่าย คลิกที่รายการเพื่อดูรายละเอียด" />
-      <ApprovalsView initialRequests={getPaymentRequests()} />
+      <ApprovalsHeader />
+      <ApprovalsView initialRequests={requests} />
     </>
   );
 }

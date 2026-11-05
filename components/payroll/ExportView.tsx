@@ -11,7 +11,8 @@ import { downloadExcel } from "@/lib/export-excel";
 import { REQUEST_EXPORT_COLUMNS } from "@/lib/export-columns";
 import { ALL, filterRequests, ROUND_OPTIONS, statusOptions, sumBy, WELFARE_FILTER_OPTIONS } from "@/lib/filters";
 import { formatBaht, formatNumber, formatThaiDate, THAI_MONTHS_FULL, THAI_MONTHS_SHORT, toBuddhistYear } from "@/lib/format";
-import { useEffectiveRequests } from "@/lib/payroll-store";
+import { useEffectiveRequests, useHydrated } from "@/lib/payroll-store";
+import { ExportSkeleton } from "./PageSkeletons";
 import type { PaymentRequest } from "@/lib/types";
 import { BarChart, type BarDatum } from "./BarChart";
 
@@ -41,6 +42,7 @@ export function groupForChart(rows: PaymentRequest[], period: Period, year: numb
 
 /** หน้ารายงาน: ตัวกรองด้านซ้าย เปลี่ยนแล้วสรุป + กราฟด้านขวาอัปเดตทันที */
 export function ExportView({ requests: rawRequests }: { requests: PaymentRequest[] }) {
+  const hydrated = useHydrated(); // false = ยังไม่ได้อ่านค่าที่บันทึกไว้ใน browser
   const requests = useEffectiveRequests(rawRequests); // วันจ่ายตามการตั้งค่า / การเลื่อน
   const toast = useToast();
   const years = [...new Set(requests.map(yearOf))].sort((a, b) => b - a);
@@ -81,6 +83,9 @@ export function ExportView({ requests: rawRequests }: { requests: PaymentRequest
     downloadExcel(`รายงานสวัสดิการ-${toBuddhistYear(year)}-${monthPart}`, REQUEST_EXPORT_COLUMNS, scoped);
     toast(`ส่งออก ${formatNumber(scoped.length)} รายการแล้ว`);
   }
+
+  // ยังไม่ได้อ่านการตั้งค่าที่บันทึกไว้: แสดง skeleton ก่อน (กันวันจ่ายเริ่มต้นแว้บแล้วเปลี่ยน)
+  if (!hydrated) return <ExportSkeleton />;
 
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[300px_1fr]">

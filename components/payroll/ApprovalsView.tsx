@@ -15,7 +15,8 @@ import { PAGE_SIZE } from "@/lib/constants";
 import { ALL, filterRequests, ROUND_OPTIONS, statusOptions, WELFARE_FILTER_OPTIONS } from "@/lib/filters";
 import { formatBaht, formatThaiDate } from "@/lib/format";
 import { usePagination } from "@/lib/use-pagination";
-import { useEffectiveRequests } from "@/lib/payroll-store";
+import { useEffectiveRequests, useHydrated } from "@/lib/payroll-store";
+import { ApprovalsSkeleton } from "./PageSkeletons";
 import type { PaymentRequest } from "@/lib/types";
 import { RequestDetailPanel } from "./RequestDetailPanel";
 
@@ -29,6 +30,7 @@ type Tab = "all" | "pending" | "paid";
  *   - ในแผง: คำขอที่ "รอจ่าย" มีปุ่ม ส่งกลับ (ต้องกรอกเหตุผล) / บันทึกจ่ายแล้ว (ยืนยันก่อน)
  */
 export function ApprovalsView({ initialRequests }: { initialRequests: PaymentRequest[] }) {
+  const hydrated = useHydrated(); // false = ยังไม่ได้อ่านค่าที่บันทึกไว้ใน browser
   const toast = useToast();
   // เก็บใน state เพราะสถานะเปลี่ยนได้หลังส่งกลับ/บันทึกจ่าย (ตอนต่อ API จริง ให้ส่งไป server ก่อนอัปเดต)
   const [rawRequests, setRequests] = useState(initialRequests);
@@ -97,6 +99,9 @@ export function ApprovalsView({ initialRequests }: { initialRequests: PaymentReq
   }
 
   const count = (s: Tab) => (s === "all" ? requests.length : requests.filter((r) => r.status === s).length);
+
+  // ยังไม่ได้อ่านการตั้งค่าที่บันทึกไว้: แสดง skeleton ก่อน (กันวันจ่ายเริ่มต้นแว้บแล้วเปลี่ยน)
+  if (!hydrated) return <ApprovalsSkeleton />;
 
   return (
     // ตาราง + แผงรายละเอียด: จอกว้างวางคู่กัน (ตาราง | แผง 360px)

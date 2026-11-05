@@ -9,7 +9,8 @@ import { Field, Select, TextInput } from "@/components/ui/Field";
 import { Pagination } from "@/components/ui/Pagination";
 import { ALL, filterRequests, ROUND_OPTIONS, WELFARE_FILTER_OPTIONS, type RequestFilter } from "@/lib/filters";
 import { usePagination } from "@/lib/use-pagination";
-import { useEffectiveRequests } from "@/lib/payroll-store";
+import { useEffectiveRequests, useHydrated } from "@/lib/payroll-store";
+import { PaymentDetailsSkeleton } from "./PageSkeletons";
 import type { PaymentRequest } from "@/lib/types";
 import { PaymentDetailCard } from "./PaymentDetailCard";
 
@@ -22,6 +23,7 @@ import { PaymentDetailCard } from "./PaymentDetailCard";
  * useSearchParams ต้องอยู่ใน <Suspense> (ดู page.tsx) เพราะเปิดใช้ cacheComponents
  */
 export function PaymentDetailsView({ requests: rawRequests, mode }: { requests: PaymentRequest[]; mode: "approvals" | "history" }) {
+  const hydrated = useHydrated(); // false = ยังไม่ได้อ่านค่าที่บันทึกไว้ใน browser
   const requests = useEffectiveRequests(rawRequests); // วันจ่ายตามการตั้งค่า / การเลื่อน
   const initialQ = useSearchParams().get("q") ?? "";
   const [draft, setDraft] = useState<RequestFilter>({ q: initialQ, round: ALL, welfare: ALL, requestDate: "", payFrom: "", payTo: "" });
@@ -31,6 +33,9 @@ export function PaymentDetailsView({ requests: rawRequests, mode }: { requests: 
   const { pageItems, pagination, setPage } = usePagination(filtered, 5);
 
   const set = (key: keyof RequestFilter) => (e: { target: { value: string } }) => setDraft((d) => ({ ...d, [key]: e.target.value }));
+
+  // ยังไม่ได้อ่านการตั้งค่าที่บันทึกไว้: แสดง skeleton ก่อน (กันวันจ่ายเริ่มต้นแว้บแล้วเปลี่ยน)
+  if (!hydrated) return <PaymentDetailsSkeleton />;
 
   return (
     <div className="flex flex-col gap-8">

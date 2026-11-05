@@ -122,3 +122,13 @@ export function useEffectiveRequests(requests: PaymentRequest[]) {
   const state = usePayrollStore();
   return applyPayroll(requests, state);
 }
+
+const noopSubscribe = () => () => {};
+
+/**
+ * true เมื่อทำงานใน browser แล้ว (อ่านค่าที่บันทึกไว้ได้), false ตอน render บน server / ก่อน hydrate
+ * ใช้แสดง skeleton แทนการโชว์ค่าเริ่มต้นแว้บหนึ่งแล้วเปลี่ยนเป็นค่าที่บันทึกไว้
+ */
+export function useHydrated() {
+  return useSyncExternalStore(noopSubscribe, () => true, () => false);
+}

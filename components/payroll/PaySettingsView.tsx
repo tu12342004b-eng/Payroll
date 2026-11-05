@@ -25,7 +25,8 @@ import {
   validatePaySettings,
   type PaySettings,
 } from "@/lib/pay-settings";
-import { usePayrollStore } from "@/lib/payroll-store";
+import { useHydrated, usePayrollStore } from "@/lib/payroll-store";
+import { PaySettingsSkeleton } from "./PageSkeletons";
 import { usePagination } from "@/lib/use-pagination";
 import type { PaymentRequest, RoundNo } from "@/lib/types";
 
@@ -58,6 +59,7 @@ function payDateFor(r: PaymentRequest, s: PaySettings) {
  * edit  = ค่าที่กำลังแก้ (null = ยังไม่ได้แก้) -> draft = edit ?? saved
  */
 export function PaySettingsView({ requests }: { requests: PaymentRequest[] }) {
+  const hydrated = useHydrated(); // false = ยังไม่ได้อ่านค่าที่บันทึกไว้ใน browser
   const toast = useToast();
   const store = usePayrollStore();
   const saved = store.settings;
@@ -88,6 +90,9 @@ export function PaySettingsView({ requests }: { requests: PaymentRequest[] }) {
     setConfirmOpen(false);
     toast("บันทึกการตั้งค่าการจ่ายเงินแล้ว");
   }
+
+  // ยังไม่ได้อ่านการตั้งค่าที่บันทึกไว้: แสดง skeleton ก่อน (กันวันจ่ายเริ่มต้นแว้บแล้วเปลี่ยน)
+  if (!hydrated) return <PaySettingsSkeleton />;
 
   return (
     <PageStack>
